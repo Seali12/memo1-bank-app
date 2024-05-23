@@ -2,6 +2,8 @@ package com.aninfo;
 
 import com.aninfo.model.Account;
 import com.aninfo.service.AccountService;
+import com.aninfo.model.Transaction;
+import com.aninfo.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,6 +19,9 @@ import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import java.util.List;
+import com.aninfo.exceptions.TransactionNotFoundException;
+
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
@@ -26,6 +31,8 @@ public class Memo1BankApp {
 
 	@Autowired
 	private AccountService accountService;
+	@Autowired
+	private TransactionService transactionService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(Memo1BankApp.class, args);
@@ -64,16 +71,35 @@ public class Memo1BankApp {
 	public void deleteAccount(@PathVariable Long cbu) {
 		accountService.deleteById(cbu);
 	}
-
+/*
 	@PutMapping("/accounts/{cbu}/withdraw")
 	public Account withdraw(@PathVariable Long cbu, @RequestParam Double sum) {
 		return accountService.withdraw(cbu, sum);
 	}
-
+*/
 	@PutMapping("/accounts/{cbu}/deposit")
 	public Account deposit(@PathVariable Long cbu, @RequestParam Double sum) {
 		return accountService.deposit(cbu, sum);
 	}
+
+	// TRANSACCIONES
+	//busco  todas las transacciones de una cuenta
+
+	@GetMapping("/accounts/transactions/cbu/{cbu}")
+	public List<Transaction> getTransactionsByCbu(@PathVariable Long cbu) {
+		return accountService.findTransactionsbyCbu(cbu);
+	}
+
+	// busco una transaccion en especifico
+	@GetMapping("/transactions/{idTransaction}")
+	public Transaction  getTransactionsByTransactionID(@PathVariable Long idTransaction) {
+		Transaction transaction = transactionService.findById(idTransaction);
+		if (transaction == null) {
+			throw new TransactionNotFoundException("Transaction with ID " + idTransaction + " not found");
+		}
+		return transaction;
+	}
+
 
 	@Bean
 	public Docket apiDocket() {
