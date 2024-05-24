@@ -1,5 +1,6 @@
 package com.aninfo;
 
+import com.aninfo.exceptions.InvalidTransactionTypeException;
 import com.aninfo.model.Account;
 import com.aninfo.service.AccountService;
 import com.aninfo.model.Transaction;
@@ -20,6 +21,7 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.util.List;
+
 import com.aninfo.exceptions.TransactionNotFoundException;
 
 
@@ -33,6 +35,7 @@ public class Memo1BankApp {
 	private AccountService accountService;
 	@Autowired
 	private TransactionService transactionService;
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(Memo1BankApp.class, args);
@@ -82,22 +85,42 @@ public class Memo1BankApp {
 		return accountService.deposit(cbu, sum);
 	}
 
-	// TRANSACCIONES
-	//busco  todas las transacciones de una cuenta
 
+
+	// TRANSACCIONES
+	@PostMapping("/transactions")
+	@ResponseStatus(HttpStatus.CREATED)
+	public Transaction createTransaction(@RequestBody Transaction transaction) {
+
+		switch (transaction.getType().toLowerCase()) {
+			case "deposit":
+				accountService.deposit(transaction.getCbu(), transaction.getAmount());
+				return transactionService.deposit(transaction);
+
+			case "withdraw":
+
+
+			default:
+
+					throw new InvalidTransactionTypeException("Invalid transaction type");
+		}
+	}
+
+
+
+	//busco  todas las transacciones de una cuenta
 	@GetMapping("/accounts/transactions/cbu/{cbu}")
 	public List<Transaction> getTransactionsByCbu(@PathVariable Long cbu) {
 		return accountService.findTransactionsbyCbu(cbu);
+		// return transactionService.findTransactionsbyCbu(cbu);
 	}
 
 	// busco una transaccion en especifico
 	@GetMapping("/transactions/{idTransaction}")
-	public Transaction  getTransactionsByTransactionID(@PathVariable Long idTransaction) {
-		Transaction transaction = transactionService.findById(idTransaction);
-		if (transaction == null) {
-			throw new TransactionNotFoundException("Transaction with ID " + idTransaction + " not found");
-		}
-		return transaction;
+	public ResponseEntity<Transaction> getTransactionsByTransactionID(@PathVariable Long idTransaction) {
+		Optional<Transaction> transaction = Optional.ofNullable(transactionService.findById(idTransaction));
+		return ResponseEntity.of(transaction);
+		///return ResponseEntity.of(accountService.getTransaction(id));
 	}
 
 

@@ -1,8 +1,7 @@
 package com.aninfo.service;
 
-import com.aninfo.exceptions.DepositNegativeSumException;
-import com.aninfo.exceptions.InsufficientFundsException;
-import com.aninfo.exceptions.TransactionNotFoundException;
+import com.aninfo.exceptions.InvalidTransactionTypeException;
+
 import com.aninfo.model.Account;
 import com.aninfo.model.Transaction;
 
@@ -11,34 +10,29 @@ import com.aninfo.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.print.DocFlavor;
-import java.util.Collection;
+
 import java.util.List;
-import java.util.Optional;
+
 
 
 @Service
 public class TransactionService {
-    // aca va la logica de las transacciones (depositos o withdraw)
+    // aca va la logica de las transacciones (depositos o withdraw), las guardo, busco
     @Autowired
     private TransactionRepository transactionRepository;
 
     @Autowired
     private AccountService accountService;
 
-    public Transaction createTransaction(String type, Long cbu, Double amount) {
-        Transaction newTransaction = new Transaction(type, cbu, amount);
+    @Autowired
+    private AccountRepository accountRepository;
 
-        return newTransaction;
+    // constructor
+    public Transaction deposit(Transaction transaction) {
+        return  this.transactionRepository.save(transaction);
     }
-    private void createDeposit(Transaction transaction) {
-        if(transaction.getType() == "deposit"){
-            accountService.deposit(transaction.getCbu(), transaction.getAmount());
-        }
-    }
-    public Collection<Transaction> getTransactions() {
-        return transactionRepository.findAll();
-    }
+
+
 
     public List<Transaction> searchTransactionsByCbu(Long cbu) {
         return transactionRepository.findTransactionsByCbu(cbu);
@@ -46,9 +40,10 @@ public class TransactionService {
     public Transaction findById(Long id) {
         return transactionRepository.findById(id).orElse(null);
     }
-    public List<Transaction> findByCbu(Long cbu) {
-        return transactionRepository.findTransactionsByCbu(cbu);
+    public Transaction save(Transaction transaction) {
+        return transactionRepository.save(transaction);
     }
+
 
 
 }
