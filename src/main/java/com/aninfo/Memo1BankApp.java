@@ -74,9 +74,9 @@ public class Memo1BankApp {
 	public void deleteAccount(@PathVariable Long cbu) {
 		accountService.deleteById(cbu);
 	}
-	
 
 	// TRANSACCIONES
+	//creo el tipo de transaccion que quiero
 	@PostMapping("/transactions")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Transaction createTransaction(@RequestBody Transaction transaction) {
@@ -95,9 +95,6 @@ public class Memo1BankApp {
 					throw new InvalidTransactionTypeException("Invalid transaction type");
 		}
 	}
-
-
-
 	//busco  todas las transacciones de una cuenta
 	@GetMapping("/accounts/transactions/cbu/{cbu}")
 	public List<Transaction> getTransactionsByCbu(@PathVariable Long cbu) {
