@@ -74,18 +74,7 @@ public class Memo1BankApp {
 	public void deleteAccount(@PathVariable Long cbu) {
 		accountService.deleteById(cbu);
 	}
-/*
-	@PutMapping("/accounts/{cbu}/withdraw")
-	public Account withdraw(@PathVariable Long cbu, @RequestParam Double sum) {
-		return accountService.withdraw(cbu, sum);
-	}
-*/
-	@PutMapping("/accounts/{cbu}/deposit")
-	public Account deposit(@PathVariable Long cbu, @RequestParam Double sum) {
-		return accountService.deposit(cbu, sum);
-	}
-
-
+	
 
 	// TRANSACCIONES
 	@PostMapping("/transactions")
@@ -98,7 +87,8 @@ public class Memo1BankApp {
 				return transactionService.deposit(transaction);
 
 			case "withdraw":
-
+				accountService.withdraw(transaction.getCbu(), transaction.getAmount());
+				return transactionService.withdraw(transaction);
 
 			default:
 
@@ -112,7 +102,6 @@ public class Memo1BankApp {
 	@GetMapping("/accounts/transactions/cbu/{cbu}")
 	public List<Transaction> getTransactionsByCbu(@PathVariable Long cbu) {
 		return accountService.findTransactionsbyCbu(cbu);
-		// return transactionService.findTransactionsbyCbu(cbu);
 	}
 
 	// busco una transaccion en especifico
@@ -120,10 +109,14 @@ public class Memo1BankApp {
 	public ResponseEntity<Transaction> getTransactionsByTransactionID(@PathVariable Long idTransaction) {
 		Optional<Transaction> transaction = Optional.ofNullable(transactionService.findById(idTransaction));
 		return ResponseEntity.of(transaction);
-		///return ResponseEntity.of(accountService.getTransaction(id));
+
 	}
 
-
+	@DeleteMapping("/transactions/{idTransaction}")
+	public void deleteTransaction(@PathVariable Long idTransaction) {
+		Transaction transaction = transactionService.findById(idTransaction);
+		transactionService.deleteTransaction(transaction);
+	}
 	@Bean
 	public Docket apiDocket() {
 		return new Docket(DocumentationType.SWAGGER_2)

@@ -32,8 +32,6 @@ public class TransactionService {
         return  this.transactionRepository.save(transaction);
     }
 
-
-
     public List<Transaction> searchTransactionsByCbu(Long cbu) {
         return transactionRepository.findTransactionsByCbu(cbu);
     }
@@ -44,6 +42,11 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-
+    public Transaction withdraw(Transaction transaction) {
+        return  transactionRepository.save(transaction);
+    }
+    public void deleteTransaction(Transaction transaction) {
+        transactionRepository.deleteById(transaction.getTransactionID());
+    }
 
 }

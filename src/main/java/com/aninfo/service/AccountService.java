@@ -65,7 +65,19 @@ public class AccountService {
 
         return account;
     }
+    @Transactional
+    public Account withdraw(Long cbu, Double sum) {
+        Account account = accountRepository.findAccountByCbu(cbu);
 
+        if (account.getBalance() < sum) {
+            throw new InsufficientFundsException("Insufficient funds");
+        }
+
+        account.setBalance(account.getBalance() - sum);
+        accountRepository.save(account);
+
+        return account;
+    }
 
 
 }
