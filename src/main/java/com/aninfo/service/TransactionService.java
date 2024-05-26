@@ -29,7 +29,17 @@ public class TransactionService {
 
     // constructor
     public Transaction deposit(Transaction transaction) {
-        return  this.transactionRepository.save(transaction);
+        // Validar que la transacción no sea nula
+        if (transaction == null) {
+            throw new IllegalArgumentException("Transaction cannot be null");
+        }
+
+        // Validar que el tipo sea "deposit"
+        if (transaction.getType() == null || !transaction.getType().equalsIgnoreCase("deposit")) {
+            throw new IllegalArgumentException("Transaction type must be 'deposit'");
+        }
+
+        return  transactionRepository.save(transaction);
     }
 
     public List<Transaction> searchTransactionsByCbu(Long cbu) {
@@ -43,6 +53,14 @@ public class TransactionService {
     }
 
     public Transaction withdraw(Transaction transaction) {
+        if (transaction == null) {
+            throw new IllegalArgumentException("Transaction cannot be null");
+        }
+
+        // Validar que el tipo  withdraw
+        if (transaction.getType() == null || !transaction.getType().equalsIgnoreCase("withdraw")) {
+            throw new IllegalArgumentException("Transaction type must be 'withdraw'");
+        }
         return  transactionRepository.save(transaction);
     }
     public void deleteTransaction(Transaction transaction) {

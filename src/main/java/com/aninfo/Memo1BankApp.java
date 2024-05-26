@@ -81,6 +81,10 @@ public class Memo1BankApp {
 	@ResponseStatus(HttpStatus.CREATED)
 	public Transaction createTransaction(@RequestBody Transaction transaction) {
 
+		// Validar que el tipo de transacción no sea nulo ni vacío
+		if (transaction.getType() == null || transaction.getType().trim().isEmpty()) {
+			throw new IllegalArgumentException("Transaction type cannot be null or empty");
+		}
 		switch (transaction.getType().toLowerCase()) {
 			case "deposit":
 				accountService.deposit(transaction.getCbu(), transaction.getAmount());
